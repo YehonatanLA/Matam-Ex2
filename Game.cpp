@@ -12,149 +12,152 @@ namespace mtm
     Game::Game(int height, int width)
     {
         if (height <= 0 || width <= 0) {
-            //ToDo illegalArgument
+            throw IllegalArgument();
         }
-        board = vector<vector<shared_ptr<Character>>>(height, vector<shared_ptr<Character>>(width,
-                                                                                            shared_ptr<Character>(
-                                                                                                    nullptr)));
         this->height = height;
         this->width = width;
-
+        board = map<Point,shared_ptr<Character>>();
     }
 
-    mtm::Game::Game(const Game& other)
+    Game::Game(const Game& other)
     {
-        this->height = other.height;
-        this->width = other.width;
-        Game new_game((int) height, (int) width);
-        for(int i = 0; i < height; i++){
-            for (int j = 0; j < width; j++) {
-                new_game.board[i][j] = other.board[i][j]->clone();
-            }
-        }
-    }
-
-    Game& mtm::Game::operator=(const Game &other)
-    {
-        if(this == &other){
-            return *this;
-        }
-        board = other.board;
         height = other.height;
         width = other.width;
-        return *this;
+        for (const auto& iterator : other.board) {
+            Point point(iterator.first);
+            shared_ptr<Character> shared_ptr = iterator.second->clone();
+            board.insert({point, shared_ptr});
+        }
     }
 
-    void Game::addCharacter(const GridPoint &coordinates, std::shared_ptr<Character> character) {
-        if (coordinates.row < 0 ||coordinates.col < 0 ||coordinates.row >= height ||coordinates.col >= width){
-            //ToDo IllegalCell Exception
-            return;
+    Game& Game::operator=(const Game &other)
+    {
+        height = other.height;
+        width = other.width;
+        this->board = other.board; //!valgrind <3
+    }
+
+    void Game::addCharacter(const GridPoint &coordinates, std::shared_ptr<Character> character)
+    {
+        if (outOfBoard(coordinates)){
+            throw IllegalCell();
         }
-        if(!isEmpty(coordinates)){
-            //ToDo CellOccupied Exception
-            return;
+        Point point_coordinates(coordinates);
+        if(isOccupied(point_coordinates)){
+            throw CellOccupied();
         }
-        board[coordinates.row][coordinates.col] = character; ///why yell??
+        board.insert({point_coordinates,character});
     }
 
     std::shared_ptr<Character>
-    Game::makeCharacter(CharacterType type, Team team, units_t health, units_t ammo, units_t range, units_t power) {
+    Game::makeCharacter(CharacterType type, Team team, units_t health, units_t ammo, units_t range, units_t power)
+    {
         switch (type) {
             case SOLDIER:
-                Soldier soldier(health, ammo, range, power, team);  ///wtf
-                break;
+                //TODO: ask wtf
+//                return shared_ptr<Soldier>(Soldier(health, ammo, range, power, team));
             case MEDIC:
-                break;
-            case SNIPER:
-                break;
+//                return shared_ptr<Soldier>(Soldier(health, ammo, range, power, team));
+            case SNIPER: ;//TODO after fix: remove ; before comment.
+//                return shared_ptr<Soldier>(Soldier(health, ammo, range, power, team));
         }
     }
 
-    std::ostream &operator<<(std::ostream &os, const Game &game) {
-        char* begin = new char [game.height * game.width];
-        char* end = begin;
-        int arr_position = 0;
-        for(const vector<shared_ptr<Character>>& vector_row : game.board){
-            for(const shared_ptr<Character>& position: vector_row){
-                begin[arr_position] = position->getCharCharacterType();
-                arr_position++;
-            }
+    void Game::move(const GridPoint &src_coordinates, const GridPoint &dst_coordinates) {
+        if(outOfBoard(src_coordinates) || outOfBoard(dst_coordinates)){
+            throw IllegalCell();
         }
-        printGameBoard(os, begin, end, game.width);
-        delete[] begin;
-
+        Point src_point(src_coordinates), dst_point(dst_coordinates);
+        if(!isOccupied(src_point)){
+            throw CellEmpty();
+        }
+        shared_ptr<Character> ptr_character = board.at(src_point);
+        if (!ptr_character->isInMovementRange(src_point, dst_point)){
+            throw MoveTooFar();
+        }
+        if(isOccupied(dst_point)){
+            throw CellOccupied();
+        }
+        board.erase(src_point);
+        board.insert({dst_point, ptr_character});
     }
 
-    bool Game::isOver(Team *winningTeam) const {
-        bool powerlifters_in_game = false, crossfitters_in_game = false;
-        int row = 0, col = 0;
-        for(const vector<shared_ptr<Character>>& vector_row: board){
-            for(const shared_ptr<Character>& position : vector_row){
-
-                GridPoint point(row,col);
-                if(isEmpty(point)){
-                    col++;
-                    continue;
-                }
-
-                else{
-
-                    Team group_name = position->getTeam();
-                    switch (group_name) {
-
-                        case POWERLIFTERS:
-                            powerlifters_in_game = true;
-                            break;
-                        case CROSSFITTERS:
-                            crossfitters_in_game = true;
-                            break;
-                    }
-                    col++;
-                }
-            }
-            row++;
-
+    void Game::attack(const GridPoint &src_coordinates, const GridPoint &dst_coordinates) {
+        if(outOfBoard(src_coordinates) || outOfBoard(dst_coordinates)){
+            throw IllegalCell();
         }
-        if(winningTeam == nullptr){
-        return crossfitters_in_game == powerlifters_in_game;
+        Point src_point(src_coordinates), dst_point(dst_coordinates);
+        if(!isOccupied(src_point)){
+            throw CellEmpty();
+        }
+        shared_ptr<Character> attacker = board.at(src_point);
+        attacker->attack(src_point , dst_point, board); //TODO ask wtf
 
-        }
-        else{
-            if(crossfitters_in_game == powerlifters_in_game){
-                return false;
-            }
-            else if(crossfitters_in_game > powerlifters_in_game){
-                *winningTeam = CROSSFITTERS;
-            }
-            else{
-                *winningTeam = POWERLIFTERS;
-            }
-        }
-        return true;
     }
 
     void Game::reload(const GridPoint &coordinates) {
         if(outOfBoard(coordinates)){
             throw IllegalCell();
         }
-        if(isEmpty(coordinates)){
+        Point point(coordinates);
+        if(!isOccupied(point)){
             throw CellEmpty();
         }
-        shared_ptr<Character> character = board[coordinates.row][coordinates.col];
-        character->reload();
+        shared_ptr<Character> ptr_character = board.at(point);
+        ptr_character->reload();
     }
 
-    bool Game::outOfBoard(const GridPoint &point) const {
-        if(point.row >= width || point.col >= height){
-            return true;
+    std::ostream &operator<<(std::ostream &os, const Game &game) {
+        char* begin = new char [game.height * game.width]; //!out fo memory?
+        char* end = begin + game.height * game.width;
+        for (char* ptr = begin; ptr < end; ++ptr) {
+            *ptr = ' '; ///Define? static const?
+        }
+        for(const auto& it : game.board){
+            int row = it.first.getGridPoint().row;
+            int col = it.first.getGridPoint().col;
+            shared_ptr<Character> ptr_character = it.second;
+            begin[ (game.width * row) + col] = ptr_character->getCharCharacterType(); ///math? transpose?
+        }
+        printGameBoard(os, begin, end, game.width);
+        delete[] begin;
+    }
+
+    bool Game::isOver(Team *winningTeam) const {
+        if(board.empty()){
+            return false;
+        }
+       bool powerlifters_in_game = false, crossfitters_in_game = false;
+        for (const auto& it : board) {
+            switch (it.second->getTeam()) {
+                case POWERLIFTERS:
+                    powerlifters_in_game = true;
+                    break;
+                case CROSSFITTERS:
+                    crossfitters_in_game = true;
+                    break;
+            }
+            if(powerlifters_in_game && crossfitters_in_game){
+                return false;
+            }
+        }
+        if(winningTeam != nullptr){
+            *winningTeam = powerlifters_in_game ? POWERLIFTERS : CROSSFITTERS;
+        }
+        return true;
+    }
+
+    bool Game::outOfBoard(const GridPoint &coordinates) const {
+        return coordinates.row < 0 ||coordinates.col < 0 ||coordinates.row >= height ||coordinates.col >= width;
+    }
+
+    bool Game::isOccupied(const Point &point) {
+        for (const auto& it : board) {
+            if (it.first == point){
+                return true;
+            }
         }
         return false;
-    }
-
-    void Game::move(const GridPoint &src_coordinates, const GridPoint &dst_coordinates) {
-        if(outOfBoard(src_coordinates) || outOfBoard(dst_coordinates)){
-            throw
-        }
     }
 
 

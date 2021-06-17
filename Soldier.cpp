@@ -1,5 +1,7 @@
 #include "Soldier.h"
 
+using namespace std;
+
 namespace mtm {
     using std::shared_ptr;
 
@@ -7,27 +9,64 @@ namespace mtm {
             Character(health, ammo, range, power, team),
             splash_range(ceil(range / 3)), splash_power(ceil(power / 2)) {}
 
-    void Soldier::attack(const GridPoint &src_coordinates, const GridPoint &dst_coordinates,
-                         std::vector<std::vector<std::shared_ptr<Character>>> board) const {
 
+    void Soldier::attack(const Point &src_coordinates, const Point &dst_coordinates,
+                         std::map<Point, std::shared_ptr<Character>> board) {
+        if (!canAttack(src_coordinates, dst_coordinates, board)) {
+            return;
+        }
+        for (const auto &it : board) {
+
+            int attack_distance = Point::distance(it.first, dst_coordinates);
+            shared_ptr<Character> attacked_ptr = it.second;
+            if (attack_distance > splash_range || attacked_ptr->getTeam() == team) {
+                continue;
+            }
+
+            attacked_ptr->hit(attack_distance > 0 ? splash_power : power);
+            if (attacked_ptr->isDead()) {
+                board.erase(dst_coordinates);
+            }
+        }
+        ammo -= ammo_per_attack;
     }
 
-    void Soldier::reload() const {
+
+    void Soldier::reload() {
         ammo += reload_amount;
     }
 
-    std::shared_ptr<Character> Soldier::clone() const {
-        //TODO
-    }
+    /*std::shared_ptr<Character> Soldier::clone() const {
+        return new Soldier();
+    }*/
 
-    char Soldier::getCharCharacterType() {
-        switch(team){
+
+    char Soldier::getCharCharacterType() const {
+        switch (team) {
             case POWERLIFTERS:
                 return 'S';
             case CROSSFITTERS:
                 return 's';
         }
         return 0;
+    }
+
+    bool
+    Soldier::canAttack(const Point &src, const Point &dest, const std::map<Point, std::shared_ptr<Character>> &board) {
+
+        if (Point::distance(src, dest) > range || Point::distance(src, dest) < 0 ||
+            (src.getGridPoint().row != dest.getGridPoint().row && src.getGridPoint().col != dest.getGridPoint().col)) {
+            throw OutOfRange();
+        }
+        if (ammo - ammo_per_attack < 0) {
+            throw OutOfAmmo();
+        }
+
+        return true;
+    }
+
+    bool Soldier::isInMovementRange(const Point &dst_point) const {
+        return false;
     }
 
 }

@@ -1,7 +1,3 @@
-//
-// Created by Yehonatan on 14/06/2021.
-//
-
 #ifndef UNTITLED2_NODE_H
 #define UNTITLED2_NODE_H
 

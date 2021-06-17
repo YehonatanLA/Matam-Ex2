@@ -2,21 +2,32 @@
 #define EXAMDETAILS_CPP_MEDIC_H
 
 #include "Character.h"
+#include "Auxiliaries.h"
 
 namespace mtm {
     class Medic : public Character {
-    public:
-        void attack(const GridPoint &src_coordinates, const GridPoint &dst_coordinates,
-                    std::vector<std::vector<std::shared_ptr<Character>>> board) const override;
-        std::shared_ptr<Character> clone() const override;
-        char getCharCharacterType() override;
-        void reload() const override;
-
 
     private:
         static const int max_movement = 5;
         static const int reload_amount = 5;
         static const int ammo_per_attack = 1;
+
+    public:
+        //Constructor & Destructor:
+        Medic(units_t health, units_t ammo, units_t range, units_t power, Team team);
+        ~Medic() = default;
+        Medic(const Medic& other) = default;
+        Medic& operator=(const Medic& other) = default;
+
+        //Inherited functins
+        void attack(const Point &src_coordinates, const Point &dst_coordinates,
+                    std::map<Point, std::shared_ptr<Character>> board) override;
+        std::shared_ptr<Character> clone() const override;
+        char getCharCharacterType() const override;
+        void reload() override;
+        bool isInMovementRange(const Point &src_point, const Point &dst_point) const override;
+        bool canAttack(const Point &src, const Point &dest,
+                       const std::map<Point, std::shared_ptr<Character>> &board) override;
     };
 
 }

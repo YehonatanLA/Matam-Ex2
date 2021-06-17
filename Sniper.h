@@ -2,19 +2,31 @@
 #define EXAMDETAILS_CPP_SNIPER_H
 
 #include "Character.h"
+
 namespace mtm {
     class Sniper : public Character {
     public:
-        void attack(const GridPoint &src_coordinates, const GridPoint &dst_coordinates,
-                    std::vector<std::vector<std::shared_ptr<Character>>> board) const override;
-        void reload() const override;
+
+        Sniper(units_t health, units_t ammo, units_t range, units_t power, Team team);
+        ~Sniper() = default;
+        Sniper(const Sniper& other) =default;
+        Sniper& operator=(const Sniper& other) =default;
+
+        void attack(const Point &src_coordinates, const Point &dst_coordinates,
+                    std::map<Point, std::shared_ptr<Character>> board) override;
+        void reload() override;
         std::shared_ptr<Character> clone() const override;
-        char getCharCharacterType() override;
+        char getCharCharacterType() const override;
+        bool canAttack(const Point &src, const Point &dest,
+                       const std::map<Point, std::shared_ptr<Character>> &board) override;
+
 
     private:
+        int critical;
         static const int max_movement = 4;
         static const int reload_amount = 2;
         static const int ammo_per_attack = 1;
+        static const int critical_module = 3;
     };
 }
 

@@ -6,16 +6,29 @@
 namespace mtm {
     class Soldier : public Character {
     public:
-        //Constructor
+
         Soldier(units_t health, units_t ammo, units_t range, units_t power, Team team);
+        ~Soldier() =default;
+        Soldier(const Soldier& other) =default;
+        Soldier& operator=(const Soldier& other) =default;
 
+        ///FILL ME!
+        void attack(const Point &src_coordinates, const Point &dst_coordinates,
+                    std::map<Point, std::shared_ptr<Character>> board) override;
 
-        void attack(const GridPoint &src_coordinates, const GridPoint &dst_coordinates,
-                    std::vector<std::vector<std::shared_ptr<Character>>> board) const override;
-        void reload() const override;
+        ///FILL ME!
+        void reload()  override;
+
+        ///FILL ME!
         std::shared_ptr<Character> clone() const override;
-        char getCharCharacterType() override;
 
+        ///FILL ME!
+        char getCharCharacterType() const override;
+
+        bool canAttack(const Point &src, const Point &dest,
+                       const std::map<Point, std::shared_ptr<Character>> &board) override;
+
+        bool isInMovementRange(const Point &dst_point) const override;
 
 
     private:

@@ -38,6 +38,7 @@ public:
 
     template<typename FuncType>
     SortedList<T> apply(FuncType func);
+
     bool operator==(const SortedList &other) const;
 
 };
@@ -69,7 +70,6 @@ SortedList<T>::SortedList(const SortedList<T> &s_list){
     head = last = nullptr;
     size = 0;
 
-    //TODO: put this in a separate function?
     if(s_list.head == nullptr){
         return;
     }
@@ -127,7 +127,6 @@ SortedList<T> &SortedList<T>::operator=(const SortedList<T> &s_list) {
 
     T value = s_list.last->getValue();
     this->insert(value);
-
     if (s_list.head != s_list.last) {
         iterator = s_list.head;
 
@@ -179,6 +178,9 @@ class SortedList<T>::const_iterator {
 
     const_iterator(const SortedList<T> *s_list, int index);
 
+    static T& findValue(const SortedList *sorted_list, int list_index) ;
+
+
 public:
     const T& operator*() const;
 
@@ -191,7 +193,6 @@ public:
     const_iterator(const const_iterator&) = default;
 
 
-    static T& findValue(const SortedList *sorted_list, int list_index) ;
 };
 
 
@@ -204,12 +205,11 @@ SortedList<T>::const_iterator::const_iterator(const SortedList<T> *s_list, int i
 template<class T>
 void SortedList<T>::insert(const T& element) {
 
-    auto* new_node = new Node<T>(element);
+    Node<T>* new_node = new Node<T>(element);
     if (head == nullptr) {
-        head = new_node;
-        last = new_node;
-
-    } else if (head == last) {
+        head = last = new_node;
+    }
+    else if (head == last) { //size == 1
         if (head->getValue() > new_node->getValue()) {
             new_node->setNext(head);
             head = new_node;
@@ -229,12 +229,12 @@ void SortedList<T>::insert(const T& element) {
     else {
 
         Node<T> *iterator(head);
-        while (iterator->getNext() != last && iterator->getNext()->getValue() <= element) {
+        while (iterator->getNext() != last && iterator->getNext()->getValue() < element) { //<= worked
             iterator = iterator->getNext();
         }
 
         if (iterator->getNext() == last && last->getValue() <= element) {
-            iterator->getNext()->setNext(new_node);
+            last->setNext(new_node);
             last = new_node;
         }
         else{
@@ -249,8 +249,10 @@ void SortedList<T>::insert(const T& element) {
 
 template<class T>
 void SortedList<T>::remove(SortedList::const_iterator it) {
+
+    //TODO check if const iterator could be invalid and think about empty list?
     if(begin() == it){
-        auto* iterator = head;
+        Node<T> * iterator = head;
         head = head->getNext();
         delete iterator;
     }
@@ -266,7 +268,8 @@ void SortedList<T>::remove(SortedList::const_iterator it) {
             last = iterator;
             delete iterator->getNext();
 
-        } else {
+        }
+        else {
             Node<T> *temp = iterator->getNext();
             iterator->setNext(iterator->getNext()->getNext());
             delete temp;
@@ -278,8 +281,7 @@ void SortedList<T>::remove(SortedList::const_iterator it) {
 
 template<class T>
 bool SortedList<T>::const_iterator::operator==(const SortedList<T>::const_iterator &it) const {
-    assert(s_list == it.s_list);
-    return index == it.index;
+    return index == it.index && s_list == it.s_list;
 }
 
 template<class T>
@@ -287,7 +289,6 @@ typename SortedList<T>::const_iterator &SortedList<T>::const_iterator::operator+
     const_iterator it = *this;
     if (it == s_list->end()) {
         throw std::out_of_range("Out of range");
-
     }
     ++index;
 
@@ -296,7 +297,7 @@ typename SortedList<T>::const_iterator &SortedList<T>::const_iterator::operator+
 
 template<class T>
 const T& SortedList<T>::const_iterator::operator*() const {
-    assert(index >= 0 && index < s_list->length() + 1);
+    assert(index >= 0 && index < s_list->length());
     return findValue(s_list, index);
 }
 
@@ -337,16 +338,13 @@ SortedList<T> SortedList<T>::filter(Predicate pred) {
 
 template<class T>
 template<typename FuncType>
-SortedList<T> SortedList<T>::apply(FuncType func) {
-
-    SortedList<T>new_sorted;
-
-
+SortedList<T> SortedList<T>::apply(FuncType func)
+{
+    SortedList<T> new_sorted;
     for(const_iterator it(begin()); !(it ==end()); ++it){
         T func_result = func(*it);
         new_sorted.insert(func_result);
     }
-
     return new_sorted;
 }
 
