@@ -31,9 +31,7 @@ namespace mtm {
     }
 
     shared_ptr<Character> Medic::clone() const {
-        //TODO:clone somehow
-        /*shared_ptr<Medic>a(new Medic(*this));
-        return a;*/
+        return std::make_shared<Medic>(*this);
     }
 
 

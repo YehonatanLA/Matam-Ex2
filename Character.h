@@ -2,7 +2,8 @@
 #define EXAMDETAILS_CPP_CHARACTER_H
 
 #include "Point.h"
-#include "Game.h"
+//#include "Game.h"
+#include <map>
 #include <memory>
 #include "Exceptions.h"
 
@@ -22,7 +23,7 @@ namespace mtm {
         Character(units_t health, units_t ammo, units_t range, units_t power, Team team);
         Character(const Character& other) = default;
         ~Character() = default;
-        &Character operator=(const Character& other) = default;
+        Character& operator=(const Character& other) = default;
 
         //Virtual Functions:
         ///FILL ME!

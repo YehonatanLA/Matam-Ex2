@@ -6,7 +6,7 @@ namespace mtm {
         GridPoint gridPoint;
 
     public:
-        explicit Point(const GridPoint &input) ;
+        explicit Point(GridPoint input) ;
         Point(const Point &input) = default;
         ~Point() = default;
         Point& operator=(const Point& other) = default;

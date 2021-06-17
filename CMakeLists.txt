@@ -3,4 +3,4 @@ project(untitled2)
 
 set(CMAKE_CXX_STANDARD 11)
 
-add_executable(untitled2 part_a_test.cpp ExamDetails.cpp ExamDetails.h Character.cpp Character.h Soldier.cpp Soldier.h Medic.cpp Medic.h Game.cpp Game.h Sniper.cpp Sniper.h Exceptions.h Exceptions.cpp Exceptions.h Point.cpp Point.h)
+add_executable(untitled2 gameTest.cpp Character.h Character.cpp Soldier.h Soldier.cpp Medic.h Medic.cpp Sniper.cpp Sniper.h Game.cpp Game.h Exceptions.cpp Exceptions.h Point.cpp Point.h Auxiliaries.h Auxiliaries.cpp)

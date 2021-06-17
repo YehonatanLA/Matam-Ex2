@@ -20,6 +20,7 @@ namespace mtm {
         bool canAttack(const Point &src, const Point &dest,
                        const std::map<Point, std::shared_ptr<Character>> &board) override;
 
+        bool isInMovementRange(const Point &src_point, const Point &dst_point) const override;
 
     private:
         int critical;

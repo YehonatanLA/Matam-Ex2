@@ -6,41 +6,49 @@
 namespace mtm {
     class Exception : std::exception {
     protected:
-        const char* what() const noexcept override = 0;
+        public:const char* what() const noexcept override = 0;
     };
 
 
 
     class IllegalArgument : mtm::Exception{
+        public:
         const char* what() const noexcept override;
     };
 
 
     class IllegalCell : mtm::Exception{
+        public:
         const char* what() const noexcept override;
 
     };
     class CellEmpty : mtm::Exception{
+        public:
         const char* what() const noexcept override;
 
     };
     class MoveTooFar : mtm::Exception{
+        public:
         const char* what() const noexcept override;
 
     };
     class CellOccupied : mtm::Exception{
+        public:
         const char* what() const noexcept override;
 
     };
     class OutOfRange : mtm::Exception{
-        const char* what() const noexcept override;
 
+    public:
+        const char* what() const noexcept override;
     };
     class OutOfAmmo : mtm::Exception{
+        public:
         const char* what() const noexcept override;
 
     };
     class IllegalTarget : mtm::Exception{
+        public:
         const char* what() const noexcept override;
 
     };

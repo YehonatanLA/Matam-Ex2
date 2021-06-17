@@ -36,9 +36,9 @@ namespace mtm {
         ammo += reload_amount;
     }
 
-    /*std::shared_ptr<Character> Soldier::clone() const {
-        return new Soldier();
-    }*/
+    std::shared_ptr<Character> Soldier::clone() const {
+        return std::make_shared<Soldier>(*this);
+    }
 
 
     char Soldier::getCharCharacterType() const {
@@ -65,8 +65,9 @@ namespace mtm {
         return true;
     }
 
-    bool Soldier::isInMovementRange(const Point &dst_point) const {
-        return false;
+    bool Soldier::isInMovementRange(const Point &src_point, const Point &dst_point) const {
+        return Point::distance(dst_point, src_point) <= max_movement;
     }
+
 
 }

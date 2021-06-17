@@ -1,9 +1,7 @@
 #include "Game.h"
-#include <utility>
 #include "Soldier.h"
 #include "Medic.h"
 #include "Sniper.h"
-#include "Auxiliaries.h"
 
 using namespace std;
 
@@ -30,14 +28,9 @@ namespace mtm
         }
     }
 
-    Game& Game::operator=(const Game &other)
-    {
-        height = other.height;
-        width = other.width;
-        this->board = other.board; //!valgrind <3
-    }
+    Game& Game::operator=(const Game &other) = default;
 
-    void Game::addCharacter(const GridPoint &coordinates, std::shared_ptr<Character> character)
+    void Game::addCharacter(const GridPoint &coordinates, const std::shared_ptr<Character>& character)
     {
         if (outOfBoard(coordinates)){
             throw IllegalCell();
@@ -54,13 +47,13 @@ namespace mtm
     {
         switch (type) {
             case SOLDIER:
-                //TODO: ask wtf
-//                return shared_ptr<Soldier>(Soldier(health, ammo, range, power, team));
+                return Soldier(health, ammo, range, power, team).clone();
             case MEDIC:
-//                return shared_ptr<Soldier>(Soldier(health, ammo, range, power, team));
-            case SNIPER: ;//TODO after fix: remove ; before comment.
-//                return shared_ptr<Soldier>(Soldier(health, ammo, range, power, team));
+                return Medic(health, ammo, range, power, team).clone();
+            case SNIPER:
+                return Sniper(health, ammo, range, power, team).clone();
         }
+        return nullptr;
     }
 
     void Game::move(const GridPoint &src_coordinates, const GridPoint &dst_coordinates) {
@@ -91,7 +84,7 @@ namespace mtm
             throw CellEmpty();
         }
         shared_ptr<Character> attacker = board.at(src_point);
-        attacker->attack(src_point , dst_point, board); //TODO ask wtf
+        attacker->attack(src_point , dst_point, board);
 
     }
 
@@ -121,6 +114,7 @@ namespace mtm
         }
         printGameBoard(os, begin, end, game.width);
         delete[] begin;
+        return os;
     }
 
     bool Game::isOver(Team *winningTeam) const {

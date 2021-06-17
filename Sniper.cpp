@@ -1,4 +1,6 @@
 #include "Sniper.h"
+
+#include <memory>
 using namespace std;
 namespace mtm {
 
@@ -6,8 +8,10 @@ namespace mtm {
     Sniper::Sniper(units_t health, units_t ammo, units_t range, units_t power, Team team) : Character(
             health, ammo, range, power, team), critical(0) {}
 
-    std::shared_ptr<Character> Sniper::clone() const {
-//        return  shared_ptr<Sniper>(new Sniper(*this));
+    shared_ptr<Character> Sniper::clone() const {
+        //return new Sniper(*this);
+        return std::make_shared<Sniper>(*this);
+        //return nullptr;
     }
 
     void Sniper::attack(const Point &src_coordinates, const Point &dst_coordinates,
@@ -41,6 +45,7 @@ namespace mtm {
             case CROSSFITTERS:
                 return 'n';
         }
+        return '\0';
     }
 
     bool Sniper::canAttack(const Point& src, const Point& dest,const std::map<Point, std::shared_ptr<Character>>& board) {
@@ -70,7 +75,9 @@ namespace mtm {
         return true;
     }
 
-
+    bool Sniper::isInMovementRange(const Point &src_point, const Point &dst_point) const {
+        return Point::distance(dst_point, src_point) <= max_movement;
+    }
 
 
 }

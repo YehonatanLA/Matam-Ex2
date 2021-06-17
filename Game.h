@@ -4,13 +4,12 @@
 #include "Character.h"
 #include <map>
 #include <ostream>
-#include "Board.h"
 #include "Point.h"
 
 namespace mtm {
     class Game {
         //parameters:
-        std::map<Point, std::shared_ptr<Character>> board;
+        std::map<Point,std::shared_ptr<Character>> board;
         unsigned int height, width;
 
         //functions:
@@ -28,7 +27,7 @@ namespace mtm {
         Game &operator=(const Game &other);
 
         ///FILL ME!
-        void addCharacter(const GridPoint &coordinates, std::shared_ptr<Character> character);
+        void addCharacter(const GridPoint &coordinates, const std::shared_ptr<Character>& character);
 
         ///FILL ME!
         static std::shared_ptr<Character> makeCharacter(CharacterType type, Team team,

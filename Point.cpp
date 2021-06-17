@@ -31,7 +31,7 @@ namespace mtm {
         return !(*this < other);
     }
 
-    Point::Point(const GridPoint &input) : gridPoint(input) {
+    Point::Point(GridPoint input) : gridPoint(input) {
 
     }
 
