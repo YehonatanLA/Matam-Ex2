@@ -70,6 +70,7 @@ int main()
 
     TEST("1.6")
     SortedList<ExamDetails> lst2;
+    SortedList<ExamDetails>list1(lst2);
     lst2.insert(exam1);
     lst2.insert(exam2);
 
@@ -79,13 +80,10 @@ int main()
     SortedList<string> lst3 = lst1;
     printList(lst3);
 
-/*
     TEST("1.8")
-    SortedList<int> test;
     lst3 = lst3.apply(getLen);
     printList(lst3);
 
-*/
 
     TEST("1.9")
     lst3.remove(lst3.begin());

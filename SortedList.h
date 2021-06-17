@@ -23,7 +23,6 @@ public:
 
     int length() const;
 
-    //apply
     class const_iterator;
 
     const_iterator begin() const;
@@ -38,7 +37,7 @@ public:
     SortedList<T> filter(Predicate pred);
 
     template<typename FuncType>
-    SortedList<FuncType> apply(FuncType func);
+    SortedList<T> apply(FuncType func);
     bool operator==(const SortedList &other) const;
 
 };
@@ -67,24 +66,23 @@ SortedList<T>::~SortedList() {
 
 template<class T>
 SortedList<T>::SortedList(const SortedList<T> &s_list){
-    auto* node = new Node<T>(s_list.head->getValue());
-    this->head = node;
-    this->head->setNext(nullptr);
-    last = this->head;
-    size = 1;
+    head = last = nullptr;
+    size = 0;
 
     //TODO: put this in a separate function?
-
+    if(s_list.head == nullptr){
+        return;
+    }
+    T value = s_list.last->getValue();
+    this->insert(value);
 
     if (s_list.head != s_list.last) {
-        T value = (*(s_list.last)).getValue();
-        this->insert(value);
 
-        Node<T> *iterator(s_list.head->getNext());
+        Node<T> *iterator(s_list.head);
 
         while (iterator != s_list.last) {
 
-            value = (*(iterator)).getValue();
+            value = iterator->getValue();
             this->insert(value);
             iterator = iterator->getNext();
 
@@ -104,12 +102,12 @@ SortedList<T> &SortedList<T>::operator=(const SortedList<T> &s_list) {
     //TODO: put this in a separate function?
     Node<T> *iterator = head;
 
-    Node<T>* temp(head);
-    delete temp;
-    if (iterator != s_list.last) {
+    Node<T>* temp = head;
+    if (iterator != last) {
 
-        iterator = (s_list.head->getNext());
-        while (iterator != s_list.last) {
+        iterator = head->getNext();
+        delete temp;
+        while (iterator != last) {
 
             temp = iterator;
             iterator = iterator->getNext();
@@ -118,27 +116,28 @@ SortedList<T> &SortedList<T>::operator=(const SortedList<T> &s_list) {
         delete iterator;
     }
 
-    int value;
 
     //TODO: put this in a separate function?
-    Node<T> node(*(s_list.head));
-    this->head = &node;
-    last = this->head;
+    size = 0;
+    head = last = nullptr;
+
+    if(s_list.head == nullptr){
+        return *this;
+    }
+
+    T value = s_list.last->getValue();
+    this->insert(value);
 
     if (s_list.head != s_list.last) {
-
-        value = (*(s_list.last)).getValue();
-        (*this).insert(value);
-        iterator = (s_list.head->getNext());
+        iterator = s_list.head;
 
         while (iterator != s_list.last) {
 
-            value = (*(iterator)).getValue();
-            (*this).insert(value);
+            value = iterator->getValue();
+            this->insert(value);
             iterator = iterator->getNext();
 
         }
-        (*this).insert(last->getValue());
 
     }
     return *this;
@@ -338,13 +337,13 @@ SortedList<T> SortedList<T>::filter(Predicate pred) {
 
 template<class T>
 template<typename FuncType>
-SortedList<FuncType> SortedList<T>::apply(FuncType func) {
+SortedList<T> SortedList<T>::apply(FuncType func) {
 
-    SortedList<FuncType>new_sorted;
-    FuncType func_result;
+    SortedList<T>new_sorted;
+
 
     for(const_iterator it(begin()); !(it ==end()); ++it){
-        func_result = func(*it);
+        T func_result = func(*it);
         new_sorted.insert(func_result);
     }
 
