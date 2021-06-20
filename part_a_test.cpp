@@ -2,23 +2,22 @@
 // Created by ittay on 3/9/2021.
 //
 #include <iostream>
-#include <string>
-#include "SortedList.h"
-#include "ExamDetails.h"
+#include "sortedList.h"
+#include "examDetails.h"
 
 using std::cout;
 using std::endl;
 using std::string;
+
 using namespace mtm;
 
 #define TEST(num) cout << endl << "TEST " << (num) << endl;
 
 string getLen(string str)
 {
-    return std::to_string(str.length());
+
+    return std::to_string(str.length()); // ? why this doesn't work without std????????????
 }
-
-
 
 bool isTrollLink(const ExamDetails& exam) {
     return (exam.getLink().find("tinyurl") != string::npos);
@@ -59,21 +58,18 @@ int main()
 
 
     TEST("1.5")
-    //TODO: list doesn't stay fully ordered, and the copy c'tor copies the pointer whole list
-    //? Try bringing the node to point to NULL for the copy c'tor
     SortedList<string> lst1 = SortedList<string>();
     lst1.insert("Charlie");
     lst1.insert("Bob");
     lst1.insert("Alice");
     lst1.insert("Donald");
+
     printList(lst1);
 
     TEST("1.6")
     SortedList<ExamDetails> lst2;
-    SortedList<ExamDetails>list1(lst2);
     lst2.insert(exam1);
     lst2.insert(exam2);
-
     printList(lst2);
 
     TEST("1.7")

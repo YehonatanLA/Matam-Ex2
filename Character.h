@@ -27,7 +27,7 @@ namespace mtm {
 
         //Virtual Functions:
         ///FILL ME!
-        virtual void attack(const Point &src_coordinates, const Point &dst_coordinates, std::map<Point, std::shared_ptr<Character>> board) = 0;
+        virtual void attack(const Point &src_coordinates, const Point &dst_coordinates, std::shared_ptr<std::map<Point, std::shared_ptr<Character>>>  board) = 0;
 
         ///FILL ME!
         virtual void reload() = 0;

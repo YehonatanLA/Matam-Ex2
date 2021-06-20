@@ -11,11 +11,11 @@ namespace mtm {
 
 
     void Soldier::attack(const Point &src_coordinates, const Point &dst_coordinates,
-                         std::map<Point, std::shared_ptr<Character>> board) {
-        if (!canAttack(src_coordinates, dst_coordinates, board)) {
+                         std::shared_ptr<std::map<Point, std::shared_ptr<Character>>>  board) {
+        if (!canAttack(src_coordinates, dst_coordinates, *board)) {
             return;
         }
-        for (const auto &it : board) {
+        for (const auto &it : *board) {
 
             int attack_distance = Point::distance(it.first, dst_coordinates);
             shared_ptr<Character> attacked_ptr = it.second;
@@ -25,7 +25,7 @@ namespace mtm {
 
             attacked_ptr->hit(attack_distance > 0 ? splash_power : power);
             if (attacked_ptr->isDead()) {
-                board.erase(dst_coordinates);
+                board->erase(dst_coordinates);
             }
         }
         ammo -= ammo_per_attack;

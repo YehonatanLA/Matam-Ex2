@@ -16,6 +16,9 @@ namespace mtm {
         if(gridPoint.row < other.gridPoint.row){
             return true;
         }
+        if(gridPoint.row > other.gridPoint.row){
+            return false;
+        }
         return gridPoint.col < other.gridPoint.col;
     }
 

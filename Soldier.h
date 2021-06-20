@@ -14,7 +14,7 @@ namespace mtm {
 
         ///FILL ME!
         void attack(const Point &src_coordinates, const Point &dst_coordinates,
-                    std::map<Point, std::shared_ptr<Character>> board) override;
+                    std::shared_ptr<std::map<Point, std::shared_ptr<Character>>>  board) override;
 
         ///FILL ME!
         void reload()  override;
