@@ -15,12 +15,12 @@ namespace mtm {
     }
 
     void Sniper::attack(const Point &src_coordinates, const Point &dst_coordinates,
-                        std::shared_ptr<std::map<Point, std::shared_ptr<Character>>> board){
+                        std::map<Point, std::shared_ptr<Character>>& board){
 
-        if (!canAttack(src_coordinates, dst_coordinates, *board)) {
+        if (!canAttack(src_coordinates, dst_coordinates, board)) {
             return;
         }
-        shared_ptr<Character> attacked_ptr = board->at(dst_coordinates);
+        shared_ptr<Character> attacked_ptr = board.at(dst_coordinates);
         critical = (critical + 1) % critical_module;
         if (critical == 0) {
             attacked_ptr->hit(2 * power);
@@ -29,7 +29,7 @@ namespace mtm {
         }
         ammo -= ammo_per_attack;
         if (attacked_ptr->isDead()) {
-            board->erase(dst_coordinates);
+            board.erase(dst_coordinates);
         }
     }
 

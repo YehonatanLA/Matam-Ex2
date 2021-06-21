@@ -84,13 +84,7 @@ namespace mtm
             throw CellEmpty();
         }
         shared_ptr<Character> attacker = board.at(src_point);
-        try{
-            attacker->attack(src_point , dst_point, shared_ptr<map<Point, std::shared_ptr<Character>>>(&board));
-
-        }
-        catch(Exception &e){
-            e.what();
-        }
+        attacker->attack(src_point , dst_point, board);
 
     }
 

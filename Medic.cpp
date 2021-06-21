@@ -9,16 +9,16 @@ namespace mtm {
                                                                                                     power, team) {}
 
     void Medic::attack(const Point &src_coordinates, const Point &dst_coordinates,
-                       std::shared_ptr<std::map<Point, std::shared_ptr<Character>>>  board) {
+                       std::map<Point, std::shared_ptr<Character>>& board) {
 
-        if (!canAttack(src_coordinates, dst_coordinates, *board)) {}
-        shared_ptr<Character> attacked_ptr = board->at(dst_coordinates);
+        if (!canAttack(src_coordinates, dst_coordinates, board)) {}
+        shared_ptr<Character> attacked_ptr = board.at(dst_coordinates);
 
         if (team != attacked_ptr->getTeam()) {
             attacked_ptr->hit(power);
             ammo -= ammo_per_attack;
             if (attacked_ptr->isDead()) {
-                board->erase(dst_coordinates);
+                board.erase(dst_coordinates);
             }
         } else {
             attacked_ptr->heal(power);
