@@ -11,10 +11,13 @@ namespace mtm {
     void Medic::attack(const Point &src_coordinates, const Point &dst_coordinates,
                        std::map<Point, std::shared_ptr<Character>>& board) {
 
-        if (!canAttack(src_coordinates, dst_coordinates, board)) {}
+        checkAttackExceptions(src_coordinates, dst_coordinates, board);
         shared_ptr<Character> attacked_ptr = board.at(dst_coordinates);
 
         if (team != attacked_ptr->getTeam()) {
+            if (ammo < ammo_per_attack) {
+                throw OutOfAmmo();
+            }
             attacked_ptr->hit(power);
             ammo -= ammo_per_attack;
             if (attacked_ptr->isDead()) {
@@ -42,32 +45,21 @@ namespace mtm {
             case CROSSFITTERS:
                 return 'm';
         }
-        return 0;
+        return 'X';
     }
 
 
-    bool
-    Medic::canAttack(const Point &src, const Point &dest, const std::map<Point, std::shared_ptr<Character>> &board) {
-
+    void
+    Medic::checkAttackExceptions(const Point &src, const Point &dest, const std::map<Point, std::shared_ptr<Character>> &board) {
         if (Point::distance(src, dest) > range || Point::distance(src, dest) < 0) {
             throw OutOfRange();
         }
-        if (ammo - ammo_per_attack < 0) {
-            throw OutOfAmmo();
-        }
-        try {
-
-            const shared_ptr<Character> &dest_player = board.at(dest);
-        }
-
-        catch (out_of_range &) {
+        if(board.find(dest) == board.end()){
             throw IllegalTarget();
         }
-
         if (Point::distance(src, dest) == 0) {
             throw IllegalTarget();
         }
-        return true;
     }
 
     bool Medic::isInMovementRange(const Point &src_point, const Point &dst_point) const {

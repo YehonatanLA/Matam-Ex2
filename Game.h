@@ -5,6 +5,10 @@
 #include <map>
 #include <ostream>
 #include "Point.h"
+#include "Soldier.h"
+#include "Medic.h"
+#include "Sniper.h"
+
 
 namespace mtm {
     class Game {

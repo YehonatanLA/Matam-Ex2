@@ -17,13 +17,14 @@ namespace mtm {
         void reload() override;
         std::shared_ptr<Character> clone() const override;
         char getCharCharacterType() const override;
-        bool canAttack(const Point &src, const Point &dest,
+        void checkAttackExceptions(const Point &src, const Point &dest,
                        const std::map<Point, std::shared_ptr<Character>> &board) override;
 
         bool isInMovementRange(const Point &src_point, const Point &dst_point) const override;
 
     private:
         int critical;
+        int min_range;
         static const int max_movement = 4;
         static const int reload_amount = 2;
         static const int ammo_per_attack = 1;

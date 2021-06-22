@@ -26,7 +26,7 @@ namespace mtm {
         char getCharCharacterType() const override;
         void reload() override;
         bool isInMovementRange(const Point &src_point, const Point &dst_point) const override;
-        bool canAttack(const Point &src, const Point &dest,
+        void checkAttackExceptions(const Point &src, const Point &dest,
                        const std::map<Point, std::shared_ptr<Character>> &board) override;
     };
 

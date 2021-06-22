@@ -7,25 +7,25 @@ namespace mtm {
 
     Soldier::Soldier(int health, int ammo, int range, int power, Team team) :
             Character(health, ammo, range, power, team),
-            splash_range(ceil(range / 3)), splash_power(ceil(power / 2)) {}
+            splash_range(ceil(((double)range) / 3)), splash_power(ceil(((double) power) / 2)) {}
 
 
     void Soldier::attack(const Point &src_coordinates, const Point &dst_coordinates,
                          std::map<Point, std::shared_ptr<Character>>& board) {
-        if (!canAttack(src_coordinates, dst_coordinates, board)) {
-            return;
-        }
-        for (const auto &it : board) {
-
-            int attack_distance = Point::distance(it.first, dst_coordinates);
-            shared_ptr<Character> attacked_ptr = it.second;
+        checkAttackExceptions(src_coordinates, dst_coordinates, board);
+        for (auto it = board.begin(); it != board.end(); /*no need for increment*/) {
+            int attack_distance = Point::distance(it->first, dst_coordinates);
+            shared_ptr<Character> attacked_ptr = it->second;
             if (attack_distance > splash_range || attacked_ptr->getTeam() == team) {
+                it++;
                 continue;
             }
-
             attacked_ptr->hit(attack_distance > 0 ? splash_power : power);
             if (attacked_ptr->isDead()) {
-                board.erase(dst_coordinates);
+                board.erase(it++);
+            }
+            else{
+                ++it;
             }
         }
         ammo -= ammo_per_attack;
@@ -51,18 +51,18 @@ namespace mtm {
         return 0;
     }
 
-    bool
-    Soldier::canAttack(const Point &src, const Point &dest, const std::map<Point, std::shared_ptr<Character>> &board) {
+    void
+    Soldier::checkAttackExceptions(const Point &src, const Point &dest, const std::map<Point, std::shared_ptr<Character>> &board) {
 
-        if (Point::distance(src, dest) > range || Point::distance(src, dest) < 0 ||
-            (src.getGridPoint().row != dest.getGridPoint().row && src.getGridPoint().col != dest.getGridPoint().col)) {
+        if (Point::distance(src, dest) > range || Point::distance(src, dest) < 0) {
             throw OutOfRange();
         }
-        if (ammo - ammo_per_attack < 0) {
+        if (ammo < ammo_per_attack) {
             throw OutOfAmmo();
         }
-
-        return true;
+        if(src.getGridPoint().row != dest.getGridPoint().row && src.getGridPoint().col != dest.getGridPoint().col){
+            throw IllegalTarget();
+        }
     }
 
     bool Soldier::isInMovementRange(const Point &src_point, const Point &dst_point) const {
