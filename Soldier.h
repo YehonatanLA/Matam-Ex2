@@ -6,7 +6,6 @@
 namespace mtm {
     class Soldier : public Character {
     public:
-
         Soldier(units_t health, units_t ammo, units_t range, units_t power, Team team);
         ~Soldier() =default;
         Soldier(const Soldier& other) =default;
@@ -25,7 +24,7 @@ namespace mtm {
         ///FILL ME!
         char getCharCharacterType() const override;
 
-        bool canAttack(const Point &src, const Point &dest,
+        void checkAttackExceptions(const Point &src, const Point &dest,
                        const std::map<Point, std::shared_ptr<Character>> &board) override;
 
         bool isInMovementRange(const Point &src_point, const Point &dst_point) const override;

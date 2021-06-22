@@ -6,7 +6,7 @@ namespace mtm {
 
 
     Sniper::Sniper(units_t health, units_t ammo, units_t range, units_t power, Team team) : Character(
-            health, ammo, range, power, team), critical(0) {}
+            health, ammo, range, power, team), critical(0) , min_range(ceil((double) range / 2)){}
 
     shared_ptr<Character> Sniper::clone() const {
         //return new Sniper(*this);
@@ -17,9 +17,7 @@ namespace mtm {
     void Sniper::attack(const Point &src_coordinates, const Point &dst_coordinates,
                         std::map<Point, std::shared_ptr<Character>>& board){
 
-        if (!canAttack(src_coordinates, dst_coordinates, board)) {
-            return;
-        }
+        checkAttackExceptions(src_coordinates, dst_coordinates, board);
         shared_ptr<Character> attacked_ptr = board.at(dst_coordinates);
         critical = (critical + 1) % critical_module;
         if (critical == 0) {
@@ -47,26 +45,27 @@ namespace mtm {
         return 'X';
     }
 
-    bool Sniper::canAttack(const Point& src, const Point& dest,const std::map<Point, std::shared_ptr<Character>>& board) {
+    void Sniper::checkAttackExceptions(const Point& src, const Point& dest,const std::map<Point, std::shared_ptr<Character>>& board) {
 
-        if(Point::distance(src, dest) > range || Point::distance(src, dest) < range / 2){//ceil
+        if(Point::distance(src, dest) > range || Point::distance(src, dest) < min_range){//ceil
             throw OutOfRange();
         }
-        if(ammo - ammo_per_attack < 0){
+        if(ammo < ammo_per_attack){
             throw OutOfAmmo();
         }
-
-            const shared_ptr<Character>& dest_player = board.at(dest);
-            const shared_ptr<Character>& src_player = board.at(src);
-            if(dest_player->getTeam() == src_player->getTeam()){
-                throw IllegalTarget();
-            }
-
-
+        shared_ptr<Character> dest_player = nullptr;
+        try {
+            dest_player = board.at(dest);
+        }
+        catch (out_of_range &) {
+            throw IllegalTarget();
+        }        const shared_ptr<Character>& src_player = board.at(src);
+        if(dest_player->getTeam() == src_player->getTeam()){
+            throw IllegalTarget();
+        }
         if(Point::distance(src, dest) == 0){
             throw IllegalTarget();
         }
-        return true;
     }
 
     bool Sniper::isInMovementRange(const Point &src_point, const Point &dst_point) const {

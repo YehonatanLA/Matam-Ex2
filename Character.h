@@ -42,7 +42,7 @@ namespace mtm {
         virtual bool isInMovementRange(const Point &src_point, const Point &dst_point) const  = 0;
 
         ///FILL ME!
-        virtual bool canAttack(const Point& src, const Point& dest, const std::map<Point, std::shared_ptr<Character>>& board) = 0;
+        virtual void checkAttackExceptions(const Point& src, const Point& dest, const std::map<Point, std::shared_ptr<Character>>& board) = 0;
 
         //general functions:
         ///FILL ME!
