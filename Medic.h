@@ -8,9 +8,9 @@ namespace mtm {
     class Medic : public Character {
 
     private:
-        static const int max_movement = 5;
-        static const int reload_amount = 5;
-        static const int ammo_per_attack = 1;
+        static const int MAX_MOVEMENT = 5;
+        static const int RELOAD_AMOUNT = 5;
+        static const int AMMO_PER_ATTACK = 1;
 
     public:
         //Constructor & Destructor:
@@ -19,7 +19,8 @@ namespace mtm {
         Medic(const Medic& other) = default;
         Medic& operator=(const Medic& other) = default;
 
-        //Inherited functins
+        //Inherited functions
+        /// can "attack" also teammates. he heals them.
         void attack(const Point &src_coordinates, const Point &dst_coordinates,
                     std::map<Point, std::shared_ptr<Character>>& board) override;
         std::shared_ptr<Character> clone() const override;

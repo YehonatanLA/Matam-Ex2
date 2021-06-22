@@ -28,12 +28,12 @@ namespace mtm {
                 ++it;
             }
         }
-        ammo -= ammo_per_attack;
+        ammo -= AMMO_PER_ATTACK;
     }
 
 
     void Soldier::reload() {
-        ammo += reload_amount;
+        ammo += RELOAD_AMOUNT;
     }
 
     std::shared_ptr<Character> Soldier::clone() const {
@@ -57,7 +57,7 @@ namespace mtm {
         if (Point::distance(src, dest) > range || Point::distance(src, dest) < 0) {
             throw OutOfRange();
         }
-        if (ammo < ammo_per_attack) {
+        if (ammo < AMMO_PER_ATTACK) {
             throw OutOfAmmo();
         }
         if(src.getGridPoint().row != dest.getGridPoint().row && src.getGridPoint().col != dest.getGridPoint().col){
@@ -66,7 +66,7 @@ namespace mtm {
     }
 
     bool Soldier::isInMovementRange(const Point &src_point, const Point &dst_point) const {
-        return Point::distance(dst_point, src_point) <= max_movement;
+        return Point::distance(dst_point, src_point) <= MAX_MOVEMENT;
     }
 
 

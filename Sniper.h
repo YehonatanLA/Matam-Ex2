@@ -12,6 +12,7 @@ namespace mtm {
         Sniper(const Sniper& other) =default;
         Sniper& operator=(const Sniper& other) =default;
 
+        /// has critical hit once in three successful hits. has a ring of range (instead from a circle)
         void attack(const Point &src_coordinates, const Point &dst_coordinates,
                     std::map<Point, std::shared_ptr<Character>>& board) override;
         void reload() override;
@@ -25,10 +26,10 @@ namespace mtm {
     private:
         int critical;
         int min_range;
-        static const int max_movement = 4;
-        static const int reload_amount = 2;
-        static const int ammo_per_attack = 1;
-        static const int critical_module = 3;
+        static const int MAX_MOVEMENT = 4;
+        static const int RELOAD_AMOUNT = 2;
+        static const int AMMO_PER_ATTACK = 1;
+        static const int CRITICAL_MODULE = 3;
     };
 }
 

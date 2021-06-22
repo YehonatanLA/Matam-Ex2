@@ -19,20 +19,20 @@ namespace mtm {
 
         checkAttackExceptions(src_coordinates, dst_coordinates, board);
         shared_ptr<Character> attacked_ptr = board.at(dst_coordinates);
-        critical = (critical + 1) % critical_module;
+        critical = (critical + 1) % CRITICAL_MODULE;
         if (critical == 0) {
             attacked_ptr->hit(2 * power);
         } else {
             attacked_ptr->hit(power);
         }
-        ammo -= ammo_per_attack;
+        ammo -= AMMO_PER_ATTACK;
         if (attacked_ptr->isDead()) {
             board.erase(dst_coordinates);
         }
     }
 
     void Sniper::reload() {
-        ammo += reload_amount;
+        ammo += RELOAD_AMOUNT;
     }
 
     char Sniper::getCharCharacterType() const {
@@ -50,7 +50,7 @@ namespace mtm {
         if(Point::distance(src, dest) > range || Point::distance(src, dest) < min_range){//ceil
             throw OutOfRange();
         }
-        if(ammo < ammo_per_attack){
+        if(ammo < AMMO_PER_ATTACK){
             throw OutOfAmmo();
         }
         shared_ptr<Character> dest_player = nullptr;
@@ -69,7 +69,7 @@ namespace mtm {
     }
 
     bool Sniper::isInMovementRange(const Point &src_point, const Point &dst_point) const {
-        return Point::distance(dst_point, src_point) <= max_movement;
+        return Point::distance(dst_point, src_point) <= MAX_MOVEMENT;
     }
 
 

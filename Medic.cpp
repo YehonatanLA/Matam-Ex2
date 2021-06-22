@@ -15,11 +15,11 @@ namespace mtm {
         shared_ptr<Character> attacked_ptr = board.at(dst_coordinates);
 
         if (team != attacked_ptr->getTeam()) {
-            if (ammo < ammo_per_attack) {
+            if (ammo < AMMO_PER_ATTACK) {
                 throw OutOfAmmo();
             }
             attacked_ptr->hit(power);
-            ammo -= ammo_per_attack;
+            ammo -= AMMO_PER_ATTACK;
             if (attacked_ptr->isDead()) {
                 board.erase(dst_coordinates);
             }
@@ -30,7 +30,7 @@ namespace mtm {
     }
 
     void Medic::reload() {
-        ammo += reload_amount;
+        ammo += RELOAD_AMOUNT;
     }
 
     shared_ptr<Character> Medic::clone() const {
@@ -55,6 +55,9 @@ namespace mtm {
             throw OutOfRange();
         }
         if(board.find(dest) == board.end()){
+            if (ammo < AMMO_PER_ATTACK) {
+                throw OutOfAmmo();
+            }
             throw IllegalTarget();
         }
         if (Point::distance(src, dest) == 0) {
@@ -63,7 +66,7 @@ namespace mtm {
     }
 
     bool Medic::isInMovementRange(const Point &src_point, const Point &dst_point) const {
-        return Point::distance(dst_point, src_point) <= max_movement;
+        return Point::distance(dst_point, src_point) <= MAX_MOVEMENT;
     }
 
 }

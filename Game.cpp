@@ -47,7 +47,7 @@ namespace mtm {
 
     std::shared_ptr<Character>
     Game::makeCharacter(CharacterType type, Team team, units_t health, units_t ammo, units_t range, units_t power) {
-        if (health <= 0 || ammo < 0 || range < 0 || power < 0) { //TODO type? team?
+        if (health <= 0 || ammo < 0 || range < 0 || power < 0) {
             throw IllegalArgument();
         }
         switch (type) {
@@ -106,7 +106,7 @@ namespace mtm {
     }
 
     std::ostream &operator<<(std::ostream &os, const Game &game) {
-        char *begin = new char[game.height * game.width]; //!out fo memory?
+        char *begin = new char[game.height * game.width]; //TODO! out fo memory?
         char *end = begin + game.height * game.width;
         for (char *ptr = begin; ptr < end; ++ptr) {
             *ptr = ' '; ///Define? static const?
@@ -140,7 +140,7 @@ namespace mtm {
                 return false;
             }
         }
-        if (winningTeam != nullptr) {
+        if (winningTeam != NULL && winningTeam != nullptr) {
             *winningTeam = powerlifters_in_game ? POWERLIFTERS : CROSSFITTERS;
         }
         return true;
