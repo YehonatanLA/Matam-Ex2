@@ -1,9 +1,7 @@
 #include "examDetails.h"
+#include <cmath>
 
-#define EPSILON 0.000001
-#define HALF 0.5
-
-
+#define STATIC_LINK "https://tinyurl.com/59hzps6m"
 using std::string;
 
 
@@ -14,16 +12,17 @@ namespace mtm {
     ExamDetails::ExamDetails(int course, int exam_month, int exam_day, double exam_hour,
                              int exam_length, const string &exam_link) : course(course), exam_link(exam_link) {
 
-        if (first_month > exam_month || exam_month > last_month) {
+        if (FIRST_MONTH > exam_month || exam_month > LAST_MONTH) {
             throw ExamDetails::InvalidDateException();
         }
         this->exam_month = exam_month;
-        if (first_day > exam_day || exam_day > last_day) {
+        if (FIRST_DAY > exam_day || exam_day > LAST_DAY) {
             throw ExamDetails::InvalidDateException();
         }
         this->exam_day = exam_day;
         this->exam_day = exam_day;
-        if (fabs(fraction(exam_hour) - half) >= epsilon && fraction(exam_hour) >= epsilon) {
+        if ((fabs(fraction(exam_hour) - HALF) >= EPSILON && fraction(exam_hour) >= EPSILON) ||
+            floor(exam_hour) >= MIDNIGHT || exam_hour < 0.0) {
             throw ExamDetails::InvalidTimeException();
         }
         this->exam_hour = exam_hour;
@@ -51,17 +50,6 @@ namespace mtm {
         return exam1.exam_hour < exam2.exam_hour;
     }
 
-/*
-    bool ExamDetails::operator==(const ExamDetails &exam_details) const {
-        return course == exam_details.course &&
-               exam_month == exam_details.exam_month &&
-               exam_day == exam_details.exam_day &&
-               exam_hour == exam_details.exam_hour &&
-               exam_length == exam_details.exam_length &&
-               exam_link == exam_details.exam_link;
-    }
-*/
-
     int ExamDetails::operator-(const ExamDetails &other) const {
         return (MONTH_LENGTH * exam_month + exam_day) - (MONTH_LENGTH * other.exam_month + other.exam_day);
     }
@@ -83,7 +71,7 @@ namespace mtm {
     std::ostream &operator<<(std::ostream &os, const ExamDetails &details) {
         os << "Course Number: " << details.course << endl
            << "Time: " << details.exam_day << "." << details.exam_month << " at " << (int) floor(details.exam_hour)
-           << ":" << (fabs(floor(details.exam_hour) - details.exam_hour) < details.epsilon ? "00" : "30")
+           << ":" << (fabs(floor(details.exam_hour) - details.exam_hour) < mtm::ExamDetails::EPSILON ? "00" : "30")
            << endl
            << "Duration: " << details.exam_length << ":00" << endl
            << "Zoom Link: " << details.exam_link << endl;
@@ -91,11 +79,10 @@ namespace mtm {
         return os;
     }
 
-    //ToDo: spacing Zoom Link, diff from alfasy's test
 
     ExamDetails ExamDetails::makeMatamExam() {
-        return ExamDetails(static_course, static_exam_month, static_exam_day, static_exam_hour, static_exam_length,
-                           "https://tinyurl.com/59hzps6m");
+        return ExamDetails(STATIC_COURSE, STATIC_EXAM_MONTH, STATIC_EXAM_DAY, STATIC_EXAM_HOUR, STATIC_EXAM_LENGTH,
+                           STATIC_LINK);
     }
 
     double ExamDetails::fraction(double num) {
@@ -109,18 +96,5 @@ namespace mtm {
     void ExamDetails::setLink(const string &examLink) {
         exam_link = examLink;
     }
-
-    bool operator>(const ExamDetails &exam1, const ExamDetails &exam2) {
-        return (exam2 < exam1);
-    }
-
-    bool ExamDetails::operator<=(const ExamDetails &other) const {
-        return !(other < *this);
-    }
-
-    bool ExamDetails::operator>=(const ExamDetails &other) const {
-        return !(*this < other);
-    }
-
 
 }
